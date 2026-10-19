@@ -1,0 +1,202 @@
+/* ==========================================================================
+   Identidade visual — "Boa Safra" (distribuidora fictícia de alimentos)
+   Cores base vêm do tema em .streamlit/config.toml; aqui ficam os detalhes
+   que o tema não cobre: cartões, faixa de cabeçalho, badges e navegação.
+   ========================================================================== */
+
+:root {
+  --creme: #FBF8F3;
+  --creme-2: #F3EDE3;
+  --papel: #FFFEFB;
+  --linha: #E7DFD2;
+  --texto: #2B2420;
+  --texto-suave: #6E625A;
+  --verde: #1F6F50;
+  --verde-escuro: #144D37;
+  --verde-claro: #E3F0E9;
+  --terracota: #D9663A;
+  --terracota-claro: #FBE6DC;
+  --mostarda: #C98A1B;
+  --mostarda-claro: #FBF0D9;
+  --ameixa: #7B4A86;
+  --ameixa-claro: #F1E7F3;
+  --sombra: 0 1px 2px rgba(60, 40, 20, .05), 0 8px 24px -12px rgba(60, 40, 20, .18);
+  --raio: 18px;
+  --serifa: "Fraunces", Georgia, serif;
+}
+
+/* --------------------------------------------------------------- estrutura */
+[data-testid="stMainBlockContainer"] {
+  padding-top: 4.75rem;   /* espaço para a barra de navegação fixa */
+  max-width: 1320px;
+}
+
+/* barra superior com a navegação */
+[data-testid="stHeader"] {
+  background: rgba(251, 248, 243, .92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--linha);
+}
+[data-testid="stTopNavLink"] {
+  border-radius: 999px;
+  padding: .3rem .85rem;
+  transition: background .15s ease;
+}
+[data-testid="stTopNavLink"]:hover { background: var(--creme-2); }
+[data-testid="stTopNavLink"][aria-current="page"],
+[data-testid="stTopNavLink"][aria-selected="true"] {
+  background: var(--verde-claro);
+}
+[data-testid="stTopNavLink"][aria-current="page"] span,
+[data-testid="stTopNavLink"][aria-selected="true"] span { color: var(--verde-escuro); font-weight: 600; }
+
+/* ----------------------------------------------------- faixa de cabeçalho */
+.faixa {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% -20%, rgba(255, 255, 255, .16) 0 120px, transparent 121px),
+    radial-gradient(circle at 80% 140%, rgba(217, 102, 58, .45) 0 90px, transparent 91px),
+    linear-gradient(120deg, var(--verde-escuro), var(--verde) 60%, #2C8463);
+  color: #FDFBF6;
+  border-radius: 24px;
+  padding: 1.6rem 2rem 1.5rem;
+  box-shadow: var(--sombra);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.faixa::after {           /* textura de "ripas de caixote" bem sutil */
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, transparent 2px 28px);
+  pointer-events: none;
+}
+.faixa__sobre {
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  opacity: .8; font-weight: 600; margin-bottom: .35rem;
+}
+.faixa__titulo {
+  font-family: var(--serifa); font-weight: 600;
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem); line-height: 1.1; margin: 0;
+}
+.faixa__sub { margin: .45rem 0 0; opacity: .88; max-width: 62ch; font-size: .98rem; }
+.faixa__lado {
+  position: relative; z-index: 1;
+  text-align: right; font-size: .82rem; opacity: .9; line-height: 1.5;
+}
+.faixa__lado strong { font-weight: 600; }
+.faixa__selo {
+  display: inline-block; margin-top: .3rem; padding: .15rem .6rem;
+  border: 1px solid rgba(255,255,255,.4); border-radius: 999px; font-size: .72rem;
+}
+
+/* ------------------------------------------------------------- cartões KPI */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 14px; }
+.kpi {
+  background: var(--papel);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 1rem 1.15rem .95rem;
+  box-shadow: var(--sombra);
+  position: relative;
+}
+.kpi--alerta { border-color: #F0C9B6; background: linear-gradient(180deg, #FFF8F4, var(--papel)); }
+.kpi__rotulo {
+  font-size: .7rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--texto-suave); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.kpi__valor {
+  font-family: var(--serifa); font-size: 1.5rem; font-weight: 600; white-space: nowrap;
+  color: var(--texto); margin: .25rem 0 .35rem; line-height: 1.15;
+}
+.kpi__rodape { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-size: .78rem; color: var(--texto-suave); }
+.delta {
+  display: inline-flex; align-items: center; gap: .2rem;
+  border-radius: 999px; padding: .08rem .5rem; font-weight: 600; font-size: .76rem;
+}
+.delta--bom { background: var(--verde-claro); color: var(--verde-escuro); }
+.delta--ruim { background: var(--terracota-claro); color: #A4401C; }
+.delta--neutro { background: var(--creme-2); color: var(--texto-suave); }
+
+/* ------------------------------------------------------------------ badges */
+.badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  border-radius: 999px; padding: .2rem .7rem; font-size: .8rem; font-weight: 600;
+  border: 1px solid transparent; white-space: nowrap;
+}
+.badge::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+.badge--ok { background: var(--verde-claro); color: var(--verde-escuro); border-color: #C7E0D3; }
+.badge--abaixo { background: var(--mostarda-claro); color: #8A5A0B; border-color: #EED9AE; }
+.badge--zerado { background: var(--terracota-claro); color: #A4401C; border-color: #F0C9B6; }
+.badge--vencendo { background: var(--ameixa-claro); color: var(--ameixa); border-color: #E0CDE4; }
+.badges { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.badges__total { font-family: var(--serifa); font-size: 1.05rem; margin-right: .35rem; }
+
+/* ------------------------------------------------------------- seções */
+.secao { margin: .6rem 0 .2rem; }
+.secao__titulo { font-family: var(--serifa); font-size: 1.25rem; font-weight: 600; margin: 0; color: var(--texto); }
+.secao__legenda { color: var(--texto-suave); font-size: .86rem; margin: .1rem 0 0; }
+
+/* contêineres com key="cartao..." viram cartões */
+[class*="st-key-cartao"] {
+  background: var(--papel);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 1.1rem 1.2rem;
+  box-shadow: var(--sombra);
+}
+/* barra de filtros */
+.st-key-barra_filtros {
+  background: var(--creme-2);
+  border: 1px dashed #DCCFBC;
+  border-radius: 16px;
+  padding: .7rem 1rem .4rem;
+}
+
+/* ------------------------------------------------------------ estado vazio */
+.vazio {
+  text-align: center; padding: 2.2rem 1rem; border: 1px dashed #D9CCB8;
+  border-radius: var(--raio); background: var(--papel); color: var(--texto-suave);
+}
+.vazio__icone { font-size: 2rem; }
+.vazio__titulo { font-family: var(--serifa); font-size: 1.2rem; color: var(--texto); margin: .4rem 0 .2rem; }
+
+/* ----------------------------------------------- ajustes de componentes nativos */
+.stTabs [data-baseweb="tab-list"] { gap: .25rem; border-bottom: 1px solid var(--linha); }
+.stTabs [data-baseweb="tab"] {
+  border-radius: 12px 12px 0 0; padding: .45rem .95rem; font-weight: 500;
+}
+.stTabs [aria-selected="true"] { background: var(--papel); }
+
+[data-testid="stForm"] {
+  background: var(--papel); border: 1px solid var(--linha);
+  border-radius: var(--raio); box-shadow: var(--sombra);
+}
+[data-testid="stExpander"] details { border-radius: 14px; background: var(--papel); }
+[data-testid="stDataFrame"], [data-testid="stDataEditor"] { border-radius: 12px; }
+
+.stButton button[kind="primary"], .stFormSubmitButton button[kind="primaryFormSubmit"] {
+  box-shadow: 0 6px 16px -8px rgba(31, 111, 80, .6);
+}
+
+.rodape {
+  margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--linha);
+  color: var(--texto-suave); font-size: .8rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+}
+.rodape a { color: var(--verde); text-decoration: none; font-weight: 600; }
+
+/* insights da IA */
+.insight {
+  display: flex; gap: .8rem; align-items: flex-start;
+  background: var(--papel); border: 1px solid var(--linha); border-left: 4px solid var(--terracota);
+  border-radius: 14px; padding: .75rem 1rem; margin-bottom: .55rem;
+}
+.insight__n { font-family: var(--serifa); font-weight: 700; color: var(--terracota); font-size: 1.1rem; }
+
+@media (max-width: 640px) {
+  .faixa { padding: 1.2rem 1.2rem; border-radius: 18px; }
+  .faixa__lado { text-align: left; }
+}
