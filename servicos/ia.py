@@ -44,12 +44,21 @@ def cliente(chave: str) -> genai.Client:
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def modelos_disponiveis(chave: str) -> list[str]:
-    """Lista os modelos "flash" liberados para a chave (Flash-Lite primeiro:
-    gasta menos da cota gratuita). Evita fixar um nome que pode ser aposentado."""
+    """Lista os modelos "flash" liberados para a chave (na ordem de ordem_modelo).
+    Evita fixar um nome que pode ser aposentado."""
     nomes = [m.name.removeprefix("models/") for m in cliente(chave).models.list()
              if "generateContent" in (m.supported_actions or []) and "flash" in m.name
              and not any(x in m.name for x in ("image", "tts", "audio", "live"))]
-    return sorted(nomes, key=lambda n: ("lite" not in n, n))
+    return sorted(nomes, key=ordem_modelo)
+
+
+def ordem_modelo(nome: str) -> tuple:
+    """Aliases "-latest" primeiro (sempre apontam para a versão atual), depois
+    Flash-Lite (mais rápido e com mais cota grátis), versões mais novas antes e previews por último. Versões antigas
+    podem continuar listadas mas recusar chaves novas."""
+    versao = re.search(r"(\d+(?:\.\d+)?)", nome)
+    return ("latest" not in nome, "lite" not in nome, "preview" in nome,
+            -float(versao.group(1)) if versao else 0.0, nome)
 
 
 def mensagem_erro(e: errors.APIError) -> str:
@@ -101,9 +110,23 @@ simples entre período atual e anterior, e não invente dados que não estejam n
 
 # ------------------------------------------------------------------ chamadas
 
+def gerar(chave: str, modelo: str, contents: str, config: types.GenerateContentConfig):
+    """Chama o modelo escolhido. Se ele estiver sobrecarregado (503), fora do ar
+    (500) ou aposentado (404), tenta os próximos modelos disponíveis."""
+    alternativos = [m for m in modelos_disponiveis(chave) if m != modelo][:2]
+    candidatos = [modelo] + alternativos
+    for i, nome in enumerate(candidatos):
+        try:
+            return cliente(chave).models.generate_content(
+                model=nome, contents=contents, config=config)
+        except errors.APIError as e:
+            if e.code not in (404, 500, 503) or i == len(candidatos) - 1:
+                raise
+
+
 def extrair_nota(chave: str, modelo: str, texto: str) -> NotaExtraida:
-    resposta = cliente(chave).models.generate_content(
-        model=modelo,
+    resposta = gerar(
+        chave, modelo,
         contents=texto,
         config=types.GenerateContentConfig(
             system_instruction=INSTRUCOES_EXTRACAO,
@@ -120,8 +143,8 @@ def extrair_nota(chave: str, modelo: str, texto: str) -> NotaExtraida:
 @st.cache_data(ttl=1800, show_spinner=False)
 def resumo_inteligente(chave: str, modelo: str, agregados_json: str) -> list[str]:
     """Cacheado pelo conteúdo: mesmos números = mesma resposta, sem gastar cota."""
-    resposta = cliente(chave).models.generate_content(
-        model=modelo,
+    resposta = gerar(
+        chave, modelo,
         contents=f"Indicadores do estoque (JSON):\n{agregados_json}",
         config=types.GenerateContentConfig(
             system_instruction=INSTRUCOES_RESUMO,

@@ -69,7 +69,7 @@ else:
         st.stop()
     with st.expander("Configurações da IA", icon=":material/tune:"):
         modelo = st.selectbox("Modelo", modelos, key="modelo_ia", persist_state="session",
-                              help="Flash-Lite primeiro: gasta menos da cota gratuita. "
+                              help="Flash-Lite primeiro: mais rápido e gasta menos da cota gratuita. "
                                    "Também é usado no Resumo inteligente do Painel.")
 
 # ------------------------------------------------------------------ 1. texto
